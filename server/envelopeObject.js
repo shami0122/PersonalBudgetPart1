@@ -1,4 +1,4 @@
-export default class EnvelopObject{
+export default class EnvelopeObject{
     constructor(name, budgetedAmount){
         this.name = name;
         this.budgetedAmount = budgetedAmount;
