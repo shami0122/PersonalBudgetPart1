@@ -12,13 +12,12 @@ const envelopes = [
 envelopeRouter.param('name', (req, res, next, name) => {
     const envelope = envelopes.find(item => item.name === name);
     if(envelope){
-        req.name = name;
+        req.envelope = envelope;
         next();
     }
     else{
         res.status(404).send();
     }
-
 });
 
 envelopeRouter.get('/', (req, res) => {
@@ -39,44 +38,23 @@ envelopeRouter.post('/', (req, res) => {
 });
 
 envelopeRouter.get('/:name', (req, res) => {
-    const name = req.params.name;
-    var envelope = envelopes.find(item => item.name === name);
-    if (envelope){
-        res.send(envelope);
-    }
-    else{
-        res.status(404).send();
-    }
+    res.send(req.envelope);
 });
 
 envelopeRouter.put('/:name', (req, res) => {
-    const name = req.params.name;
     const amountUsed = req.body.amountUsed;
-    var envelope = envelopes.find(item => item.name === name);
-    if(envelope){
-        if (envelope.currentBalance >= amountUsed){
-            envelope.currentBalance -= amountUsed;
-            res.status(200).send(envelope);
-        }
-        else{
-            res.status(400).send();
-        }
+    if (req.envelope.currentBalance >= amountUsed){
+        req.envelope.currentBalance -= amountUsed;
+        res.status(200).send(req.envelope);
     }
     else{
-        res.status(404).send();
+        res.status(400).send();
     }
 });
 
 envelopeRouter.delete('/:name', (req, res) => {
-    const name = req.params.name;
-    var envelope = envelopes.find(item => item.name === name);
-    if(envelope){
-        envelopes.pop(envelope);
-        res.status(204).send();
-    }
-    else{
-        res.status(404).send();
-    }
+    envelopes.splice(envelopes.findIndex(item => item.name === req.envelope.name), 1);
+    res.status(204).send();
 });
 
 module.exports  = envelopeRouter;
