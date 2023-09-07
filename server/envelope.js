@@ -33,7 +33,7 @@ envelopeRouter.post('/', (req, res) => {
         res.status(201).send(newEnvelope);
     }
     else{
-        res.status(409).send('Bad Request. This envelope already exists')
+        res.status(409).send('Duplicate. This envelope already exists')
     }
 });
 
@@ -57,4 +57,24 @@ envelopeRouter.delete('/:name', (req, res) => {
     res.status(204).send();
 });
 
-module.exports  = envelopeRouter;
+envelopeRouter.post('/:from/:to', (req, res) => {
+    const envelope1 = envelopes.find(item => item.name === req.params.from);
+    const envelope2 = envelopes.find(item => item.name === req.params.to);
+    const {amountToTranfser} = req.body;
+    if(envelope1 && envelope2){
+        if(envelope1.currentBalance >= amountToTranfser){
+            envelope1.currentBalance -= amountToTranfser;
+            envelope2.currentBalance += amountToTranfser;
+            envelope2.budgetedAmount += amountToTranfser;
+            res.status(201).send(envelope2);
+        }
+        else{
+            res.status(400).send();
+        }
+    }else{
+        res.status(404).send();
+    }
+})
+
+
+module.exports  = envelopeRouter; 
